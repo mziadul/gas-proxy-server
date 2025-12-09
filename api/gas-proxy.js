@@ -1,9 +1,13 @@
 export default async function handler(req, res) {
-  // Always set CORS headers for all responses
+  // Always set CORS and no-cache headers for all responses
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Vary", "Origin");
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  res.setHeader("Surrogate-Control", "no-store");
 
   try {
     if (req.method === "OPTIONS") {
@@ -38,6 +42,10 @@ export default async function handler(req, res) {
   } catch (err) {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Vary", "Origin");
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    res.setHeader("Surrogate-Control", "no-store");
     return res.status(500).json({ error: "Proxy failure", details: err.message });
   }
 }

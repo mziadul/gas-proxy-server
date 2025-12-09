@@ -1,9 +1,12 @@
 export default async function handler(req, res) {
   try {
+    // Always set CORS headers
+    res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
+    res.setHeader("Vary", "Origin");
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
     if (req.method === "OPTIONS") {
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-      res.setHeader("Access-Control-Allow-Headers", "Content-Type");
       return res.status(204).end();
     }
 
@@ -29,13 +32,13 @@ export default async function handler(req, res) {
     const response = await fetch(urlObj.toString(), fetchOptions);
     const text = await response.text();
 
-    res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Content-Type", "application/json");
     return res.status(response.status).send(text);
 
   } catch (err) {
     console.error("Proxy Error:", err);
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
+    res.setHeader("Vary", "Origin");
     return res.status(500).json({ error: "Proxy failure", details: err.message });
   }
 }

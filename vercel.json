@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/gas-proxy.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/gas-proxy",
+      "dest": "/api/gas-proxy.js"
+    }
+  ],
+  "env": {
+    "GAS_URL": "https://script.google.com/macros/s/AKfycbzJHTuW1y20ko9zkY4YE198Gl0ZgaMn_kQDNQLZ56VL0SINv1DGqkFOzBpZTXNbG2BeoQ/exec"
+  }
+}

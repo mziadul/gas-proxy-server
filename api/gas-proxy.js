@@ -25,8 +25,20 @@ export default async function handler(req, res) {
     });
     const fetchOptions = { method: req.method };
     if (req.method === "POST") {
-      fetchOptions.headers = { "Content-Type": "application/json" };
-      fetchOptions.body = JSON.stringify(req.body);
+      // Forward the incoming Content-Type when possible so the target (GAS)
+      // receives the same format (e.g., application/x-www-form-urlencoded).
+      const incomingContentType = req.headers["content-type"] || "application/json";
+      fetchOptions.headers = { "Content-Type": incomingContentType };
+
+      if (incomingContentType.includes("application/json")) {
+        fetchOptions.body = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
+      } else if (incomingContentType.includes("application/x-www-form-urlencoded")) {
+        // req.body may be an object when parsed by Vercel; convert to urlencoded string
+        fetchOptions.body = typeof req.body === "string" ? req.body : new URLSearchParams(req.body).toString();
+      } else {
+        // Fallback: try to forward raw body if available, otherwise stringify
+        fetchOptions.body = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
+      }
     }
     const response = await fetch(urlObj.toString(), fetchOptions);
     const text = await response.text();
